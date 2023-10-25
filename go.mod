@@ -1,4 +1,4 @@
-module gRPC
+module github.com/seve0039/gRPC.git
 
 go 1.21.0
 
