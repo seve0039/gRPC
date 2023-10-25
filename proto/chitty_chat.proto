@@ -1,0 +1,31 @@
+syntax = "proto3";
+option go_package = "github.com/seve0039/gRPC.git/proto";
+package proto;
+
+service ChittyChat {
+    rpc Join(JoinRequest) returns (JoinAck);
+    rpc Leave(LeaveRequest) returns (LeaveAck);
+    rpc Broadcast(stream ChatMessage) returns (stream ChatMessage);
+}
+
+message JoinRequest {
+    string name = 1;
+}
+
+message JoinAck {
+    string message = 1;
+}
+
+message LeaveRequest {
+    string name = 1;
+}
+
+message LeaveAck {
+    string message = 1;
+}
+
+message ChatMessage {
+    string name = 1;
+    string message = 2;
+    int64 timestamp = 3;
+}
