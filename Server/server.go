@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"os"
 	"sync"
 
 	gRPC "github.com/seve0039/gRPC.git/proto"
@@ -27,9 +28,19 @@ var serverName = flag.String("name", "default", "Server's name")
 var port = flag.String("port", "5400", "Server port")
 
 func main() {
+	createLogFile()
 	flag.Parse()
-	fmt.Println(".:server is starting:.")
+	fmt.Println("--- server is starting ---")
 	launchServer()
+}
+
+func createLogFile() {
+	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(file)
 }
 
 func launchServer() {
@@ -46,7 +57,7 @@ func launchServer() {
 	}
 
 	gRPC.RegisterChittyChatServer(grpcServer, server)
-	log.Printf("Server %s: Listening at %v\n", *serverName, list.Addr())
+	log.Printf("NEW SESSION: Server %s: Listening at %v\n", *serverName, list.Addr())
 
 	if err := grpcServer.Serve(list); err != nil {
 		log.Fatalf("failed to serve %v", err)
@@ -96,8 +107,8 @@ func (s *Server) broadcastMessage(message string) {
 	s.participantMutex.RLock()
 	defer s.participantMutex.RUnlock()
 
-	fmt.Println()
 	fmt.Printf("Received: %v", message)
+	log.Printf("Received: %v", message)
 
 	for _, participant := range s.participants {
 		participant.Send(&gRPC.ChatMessage{Message: message, Timestamp: s.lamportClock})

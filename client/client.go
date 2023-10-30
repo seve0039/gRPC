@@ -14,15 +14,18 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var clientsName = flag.String("name", "default", "Sender's name")
+var user = "Villads"
+var clientsName = flag.String("name", user, "Sender's name")
 var serverPort = flag.String("server", "5400", "Tcp server")
 
 var server gRPC.ChittyChatClient
 var ServerConn *grpc.ClientConn
 
 func main() {
+	//fmt.Println("--- Please enter username")
+	//readerName := bufio.NewReader(os.Stdin)
 	flag.Parse()
-	fmt.Println("--- CLIENT APP ---")
+	fmt.Println("--- LOGGED IN AS: ", user, " ----")
 
 	ConnectToServer()
 	defer ServerConn.Close()
@@ -38,9 +41,6 @@ func main() {
 	go listenForBroadcasts(stream)
 
 	parseInput(stream)
-
-	log.Println("33")
-	fmt.Println("34")
 }
 
 func ConnectToServer() {
@@ -68,6 +68,7 @@ func joinServer() {
 func parseInput(stream gRPC.ChittyChat_BroadcastClient) {
 	reader := bufio.NewScanner(os.Stdin)
 	for reader.Scan() {
+
 		sendChatMessage(reader.Text(), stream)
 	}
 }
@@ -81,9 +82,7 @@ func sendChatMessage(message string, stream gRPC.ChittyChat_BroadcastClient) {
 	*/
 
 	msg := &gRPC.ChatMessage{Name: *clientsName, Message: message}
-	log.Println("Ready for sendoff")
 	stream.Send(msg)
-	log.Println("Message has been sent")
 }
 
 func listenForBroadcasts(stream gRPC.ChittyChat_BroadcastClient) {
@@ -93,10 +92,10 @@ func listenForBroadcasts(stream gRPC.ChittyChat_BroadcastClient) {
 			return
 		}
 		if err != nil {
-			log.Println("Failed to receive broadcast:", err)
+			log.Println("Failed to receive broadcast: ", err)
 			return
 		}
 
-		log.Printf("[Lamport Timestamp: %d] %s\n", msg.GetTimestamp(), msg.GetMessage())
+		fmt.Println(msg.GetMessage())
 	}
 }
