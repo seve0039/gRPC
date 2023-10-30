@@ -8,7 +8,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"strings"
 
 	gRPC "github.com/seve0039/gRPC.git/proto"
 	"google.golang.org/grpc"
@@ -30,9 +29,18 @@ func main() {
 
 	joinServer()
 
-	go listenForBroadcasts()
+	stream, err := server.Broadcast(context.Background())
+	if err != nil {
+		log.Println("Failed to send message:", err)
+		return
+	}
 
-	parseInput()
+	go listenForBroadcasts(stream)
+
+	parseInput(stream)
+
+	log.Println("33")
+	fmt.Println("34")
 }
 
 func ConnectToServer() {
@@ -57,43 +65,28 @@ func joinServer() {
 	}
 }
 
-func parseInput() {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Print("-> ")
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			log.Fatal(err)
-		}
-		input = strings.TrimSpace(input)
-
-		sendChatMessage(input)
+func parseInput(stream gRPC.ChittyChat_BroadcastClient) {
+	reader := bufio.NewScanner(os.Stdin)
+	for reader.Scan() {
+		sendChatMessage(reader.Text(), stream)
 	}
 }
 
-func sendChatMessage(message string) {
-	if message == "exit" {
-		server.Leave(context.Background(), &gRPC.LeaveRequest{Name: *clientsName})
-		os.Exit(0)
-	}
-
-	stream, err := server.Broadcast(context.Background())
-	if err != nil {
-		log.Println("Failed to send message:", err)
-		return
-	}
+func sendChatMessage(message string, stream gRPC.ChittyChat_BroadcastClient) {
+	/*
+		if message == "exit" {
+			server.Leave(context.Background(), &gRPC.LeaveRequest{Name: *clientsName})
+			os.Exit(0)
+		}
+	*/
 
 	msg := &gRPC.ChatMessage{Name: *clientsName, Message: message}
+	log.Println("Ready for sendoff")
 	stream.Send(msg)
+	log.Println("Message has been sent")
 }
 
-func listenForBroadcasts() {
-	stream, err := server.Broadcast(context.Background())
-	if err != nil {
-		log.Println("Failed to get broadcast stream:", err)
-		return
-	}
-
+func listenForBroadcasts(stream gRPC.ChittyChat_BroadcastClient) {
 	for {
 		msg, err := stream.Recv()
 		if err == io.EOF {
@@ -104,6 +97,6 @@ func listenForBroadcasts() {
 			return
 		}
 
-		fmt.Printf("[Lamport Timestamp: %d] %s\n", msg.Timestamp, msg.Message)
+		log.Printf("[Lamport Timestamp: %d] %s\n", msg.GetTimestamp(), msg.GetMessage())
 	}
 }

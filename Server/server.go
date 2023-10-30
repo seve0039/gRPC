@@ -55,7 +55,7 @@ func launchServer() {
 
 func (s *Server) Join(ctx context.Context, joinReq *gRPC.JoinRequest) (*gRPC.JoinAck, error) {
 	ack := &gRPC.JoinAck{Message: fmt.Sprintf("Welcome to Chitty-Chat, %s!", joinReq.Name)}
-	s.broadcastMessage(fmt.Sprintf("Participant %s joined Chitty-Chat at Lamport time %d", joinReq.Name, s.incrementLamport()))
+	s.broadcastMessage(fmt.Sprintf("Participant %s joined Chitty-Chat at Lamport time %d", joinReq.GetName(), s.incrementLamport()))
 	return ack, nil
 }
 
@@ -95,6 +95,9 @@ func (s *Server) Broadcast(stream gRPC.ChittyChat_BroadcastServer) error {
 func (s *Server) broadcastMessage(message string) {
 	s.participantMutex.RLock()
 	defer s.participantMutex.RUnlock()
+
+	fmt.Println()
+	fmt.Printf("Received: %v", message)
 
 	for _, participant := range s.participants {
 		participant.Send(&gRPC.ChatMessage{Message: message, Timestamp: s.lamportClock})

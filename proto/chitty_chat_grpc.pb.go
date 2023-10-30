@@ -22,6 +22,7 @@ const (
 	ChittyChat_Join_FullMethodName      = "/proto.ChittyChat/Join"
 	ChittyChat_Leave_FullMethodName     = "/proto.ChittyChat/Leave"
 	ChittyChat_Broadcast_FullMethodName = "/proto.ChittyChat/Broadcast"
+	ChittyChat_SendMsg_FullMethodName   = "/proto.ChittyChat/SendMsg"
 )
 
 // ChittyChatClient is the client API for ChittyChat service.
@@ -31,6 +32,7 @@ type ChittyChatClient interface {
 	Join(ctx context.Context, in *JoinRequest, opts ...grpc.CallOption) (*JoinAck, error)
 	Leave(ctx context.Context, in *LeaveRequest, opts ...grpc.CallOption) (*LeaveAck, error)
 	Broadcast(ctx context.Context, opts ...grpc.CallOption) (ChittyChat_BroadcastClient, error)
+	SendMsg(ctx context.Context, in *ChatMessage, opts ...grpc.CallOption) (*ChatMessage, error)
 }
 
 type chittyChatClient struct {
@@ -90,6 +92,15 @@ func (x *chittyChatBroadcastClient) Recv() (*ChatMessage, error) {
 	return m, nil
 }
 
+func (c *chittyChatClient) SendMsg(ctx context.Context, in *ChatMessage, opts ...grpc.CallOption) (*ChatMessage, error) {
+	out := new(ChatMessage)
+	err := c.cc.Invoke(ctx, ChittyChat_SendMsg_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ChittyChatServer is the server API for ChittyChat service.
 // All implementations must embed UnimplementedChittyChatServer
 // for forward compatibility
@@ -97,6 +108,7 @@ type ChittyChatServer interface {
 	Join(context.Context, *JoinRequest) (*JoinAck, error)
 	Leave(context.Context, *LeaveRequest) (*LeaveAck, error)
 	Broadcast(ChittyChat_BroadcastServer) error
+	SendMsg(context.Context, *ChatMessage) (*ChatMessage, error)
 	mustEmbedUnimplementedChittyChatServer()
 }
 
@@ -112,6 +124,9 @@ func (UnimplementedChittyChatServer) Leave(context.Context, *LeaveRequest) (*Lea
 }
 func (UnimplementedChittyChatServer) Broadcast(ChittyChat_BroadcastServer) error {
 	return status.Errorf(codes.Unimplemented, "method Broadcast not implemented")
+}
+func (UnimplementedChittyChatServer) SendMsg(context.Context, *ChatMessage) (*ChatMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendMsg not implemented")
 }
 func (UnimplementedChittyChatServer) mustEmbedUnimplementedChittyChatServer() {}
 
@@ -188,6 +203,24 @@ func (x *chittyChatBroadcastServer) Recv() (*ChatMessage, error) {
 	return m, nil
 }
 
+func _ChittyChat_SendMsg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChittyChatServer).SendMsg(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChittyChat_SendMsg_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChittyChatServer).SendMsg(ctx, req.(*ChatMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ChittyChat_ServiceDesc is the grpc.ServiceDesc for ChittyChat service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,6 +235,10 @@ var ChittyChat_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Leave",
 			Handler:    _ChittyChat_Leave_Handler,
+		},
+		{
+			MethodName: "SendMsg",
+			Handler:    _ChittyChat_SendMsg_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
