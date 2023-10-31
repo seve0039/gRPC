@@ -1,0 +1,4 @@
+2023/10/31 16:33:21 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/10/31 16:33:27 Received: Participant CtuTc joined Chitty-Chat at Lamport time 1
+2023/10/31 16:33:33 Received: Participant hm7IE joined Chitty-Chat at Lamport time 2
+2023/10/31 16:33:35 Received: hm7IE: Dav at Lamport time 3

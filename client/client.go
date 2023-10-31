@@ -41,7 +41,7 @@ func main() {
 	}
 
 	go listenForBroadcasts(stream)
-
+	sendChatMessage("A client joined", stream)
 	parseInput(stream)
 }
 
