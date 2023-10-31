@@ -1,4 +1,6 @@
 # gRPC
+**Warning:**
+A client will be assigned a random name and can't be changed by the user.
 
 1. go into the server folder in your terminal and write "go run server.go"
 2. in another terminal go into the client folder and write "go run client.go"
