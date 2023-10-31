@@ -71,6 +71,8 @@ func (s *Server) Join(ctx context.Context, joinReq *gRPC.JoinRequest) (*gRPC.Joi
 }
 
 func (s *Server) Leave(ctx context.Context, leaveReq *gRPC.LeaveRequest) (*gRPC.LeaveAck, error) {
+	
+	
 	delete(s.participants, leaveReq.Name)
 	fmt.Println("Participant ", leaveReq.Name, " left Chitty-Chat")
 	s.broadcastMessage(fmt.Sprintf("Participant %s left Chitty-Chat at Lamport time %d", leaveReq.GetName(), s.incrementLamport()))

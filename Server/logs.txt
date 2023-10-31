@@ -1,13 +1,6 @@
-2023/10/31 14:00:39 NEW SESSION: Server default: Listening at 127.0.0.1:5400
-2023/10/31 14:00:42 Received: Participant poiKA joined Chitty-Chat at Lamport time 1
-2023/10/31 14:00:45 Received: Participant np1yD joined Chitty-Chat at Lamport time 2
-2023/10/31 14:00:55 Received: poiKA: Hello at Lamport time 3
-2023/10/31 14:01:00 Received: np1yD: Hi at Lamport time 4
-2023/10/31 14:01:05 Received: Participant fPFfV joined Chitty-Chat at Lamport time 5
-2023/10/31 14:01:16 Received: fPFfV: Hey at Lamport time 6
-2023/10/31 14:01:31 Received: poiKA: Goodbye at Lamport time 7
-2023/10/31 14:01:35 Received: Participant poiKA left Chitty-Chat at Lamport time 8
-2023/10/31 14:01:48 Received: fPFfV: bye at Lamport time 9
-2023/10/31 14:01:49 Received: Participant fPFfV left Chitty-Chat at Lamport time 10
-2023/10/31 14:01:56 Received: np1yD: farvel at Lamport time 11
-2023/10/31 14:01:56 Received: Participant np1yD left Chitty-Chat at Lamport time 12
+2023/10/31 15:46:50 NEW SESSION: Server default: Listening at 127.0.0.1:5400
+2023/10/31 15:46:56 Received: Participant TOxt6 joined Chitty-Chat at Lamport time 1
+2023/10/31 15:46:58 Received: Participant ACtgH joined Chitty-Chat at Lamport time 2
+2023/10/31 15:47:04 Received: TOxt6: Heello at Lamport time 3
+2023/10/31 15:47:24 Received: ACtgH: awd at Lamport time 4
+2023/10/31 15:47:40 Received: Participant ACtgH left Chitty-Chat at Lamport time 5
