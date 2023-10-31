@@ -103,7 +103,7 @@ func listenForBroadcasts(stream gRPC.ChittyChat_BroadcastClient) {
 	}
 }
 
-// This function was copied from here https://www.tutorialspoint.com/how-to-generate-random-string-characters-in-golang
+// This function was inspired from here https://www.tutorialspoint.com/how-to-generate-random-string-characters-in-golang
 func generateRandomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
