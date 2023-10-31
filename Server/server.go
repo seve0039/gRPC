@@ -71,13 +71,12 @@ func (s *Server) Join(ctx context.Context, joinReq *gRPC.JoinRequest) (*gRPC.Joi
 }
 
 func (s *Server) Leave(ctx context.Context, leaveReq *gRPC.LeaveRequest) (*gRPC.LeaveAck, error) {
-	s.participantMutex.Lock()
-	defer s.participantMutex.Unlock()
-
 	delete(s.participants, leaveReq.Name)
-	s.broadcastMessage(fmt.Sprintf("Participant %s left Chitty-Chat at Lamport time %d", leaveReq.Name, s.incrementLamport()))
+	fmt.Println("Participant ", leaveReq.Name, " left Chitty-Chat")
+	s.broadcastMessage(fmt.Sprintf("Participant %s left Chitty-Chat at Lamport time %d", leaveReq.GetName(), s.incrementLamport()))
 
 	return &gRPC.LeaveAck{Message: "Goodbye!"}, nil
+
 }
 
 func (s *Server) Broadcast(stream gRPC.ChittyChat_BroadcastServer) error {
@@ -107,7 +106,7 @@ func (s *Server) broadcastMessage(message string) {
 	s.participantMutex.RLock()
 	defer s.participantMutex.RUnlock()
 
-	fmt.Printf("Received: %v", message)
+	fmt.Printf("Received: %v\n", message)
 	log.Printf("Received: %v", message)
 
 	for _, participant := range s.participants {

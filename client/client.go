@@ -7,14 +7,16 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"os"
+	"time"
 
 	gRPC "github.com/seve0039/gRPC.git/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var user = "Villads"
+var user = generateRandomString(5)
 var clientsName = flag.String("name", user, "Sender's name")
 var serverPort = flag.String("server", "5400", "Tcp server")
 
@@ -74,15 +76,16 @@ func parseInput(stream gRPC.ChittyChat_BroadcastClient) {
 }
 
 func sendChatMessage(message string, stream gRPC.ChittyChat_BroadcastClient) {
-	/*
-		if message == "exit" {
-			server.Leave(context.Background(), &gRPC.LeaveRequest{Name: *clientsName})
-			os.Exit(0)
-		}
-	*/
 
-	msg := &gRPC.ChatMessage{Name: *clientsName, Message: message}
-	stream.Send(msg)
+	if message == "exit" {
+		server.Leave(context.Background(), &gRPC.LeaveRequest{Name: *clientsName})
+		os.Exit(0)
+
+	} else {
+		msg := &gRPC.ChatMessage{Name: *clientsName, Message: message}
+		stream.Send(msg)
+	}
+
 }
 
 func listenForBroadcasts(stream gRPC.ChittyChat_BroadcastClient) {
@@ -98,4 +101,16 @@ func listenForBroadcasts(stream gRPC.ChittyChat_BroadcastClient) {
 
 		fmt.Println(msg.GetMessage())
 	}
+}
+
+// This function was copied from here https://www.tutorialspoint.com/how-to-generate-random-string-characters-in-golang
+func generateRandomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }
